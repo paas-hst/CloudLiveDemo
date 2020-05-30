@@ -96,8 +96,7 @@ export default {
     this.updateBaseAttr();
 
     // 默认选择RTMP源
-    //this.liveUrl = this.$route.params.rtmpUrl;
-    this.liveUrl = this.$route.params.hlsUrl;
+    this.liveUrl = this.$route.params.rtmpUrl;
   },
 
   methods: {

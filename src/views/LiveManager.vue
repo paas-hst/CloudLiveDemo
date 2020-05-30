@@ -24,7 +24,7 @@
           shape="circle"
           type="primary"
           style="width: 80px; height: 30px"
-          @click="queryLiveList"
+          @click="queryLiveList(true)"
         >查询</Button>
         <Button
           shape="circle"
@@ -313,20 +313,20 @@ export default {
 
     this.queryAppId = localStorage.getItem("queryAppId");
 
-    this.queryLiveList();
+    this.queryLiveList(false);
   },
 
   methods: {
     playLive(param) {
+      // 播放页面需要显示AppID
       param.row.appId = this.queryAppId;
-      console.log(param.row);
       this.$router.push({ name: "player", params: param.row});
     },
     /**
      * 父组件初始化完成后通知子组件
      */
     onBaseReady() {
-      this.queryLiveList();
+      this.queryLiveList(false);
     },
     /**
      * 设置Header显示信息及按钮点击跳转地址
@@ -385,7 +385,7 @@ export default {
         .then(data => {
           if (data.code === 0) {
             this.$Message.success("创建直播成功！");
-            this.queryLiveList();
+            this.queryLiveList(false);
             console.log(data);
           } else {
             this.$Message.error("创建直播失败！");
@@ -474,14 +474,18 @@ export default {
     },
     /**
      * 查询录制任务
+     * showMessage 是否进行提示
      */
-    queryLiveList() {
+    queryLiveList(showMessage) {
       if (this.queryAppId == null || this.queryAppId.length === 0) {
-        this.$Message.warning("App ID不能为空");
+        showMessage && this.$Message.warning("App ID不能为空");
         return;
       }
       
+      // 查询之前先清掉列表
       this.tabData = [];
+
+      // 保存查询条件
       localStorage.setItem("queryAppId", this.queryAppId);
 
       fetch(this.buildQueryLiveListUrl(), {
@@ -498,15 +502,15 @@ export default {
           if (resp.result.liveInfoList.length > 0) {
             this.handleQueryLiveListRsp(resp.result.liveInfoList);
           } else {
-            this.$Message.warning("直播列表为空");
+            showMessage && this.$Message.warning("直播列表为空");
           }
         } else {
-          this.$Message.error("获取直播列表失败！");
+          showMessage && this.$Message.error("获取直播列表失败！");
           console.log(resp);
         }
       })
       .catch(err => {
-        this.$Message.error("获取直播列表失败！");
+        showMessage && this.$Message.error("获取直播列表失败！");
         console.log(err);
       });
     },
@@ -535,7 +539,7 @@ export default {
       .then(data => {
         if (data.code == 0) {
           this.$Message.success("停止直播成功！");
-          this.queryLiveList();
+          this.queryLiveList(false);
         } else {
           this.$Message.error("停止直播失败！");
           console.log(data);
@@ -559,7 +563,7 @@ export default {
      * @param pageSize 每页最大显示记录数
      */
     pageSizeChange(pageSize) {
-      this.queryLiveList();
+      this.queryLiveList(false);
     }
   }
 };
