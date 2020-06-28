@@ -318,6 +318,7 @@ export default {
 
   methods: {
     playLive(param) {
+      console.log(param);
       // 播放页面需要显示AppID
       param.row.appId = this.queryAppId;
       this.$router.push({ name: "player", params: param.row});
@@ -418,12 +419,12 @@ export default {
 
       for (const live of liveList) {
         this.tabData.push({
-          groupId: live.groupId,
+          groupId: live.group_id,
           liveState: 1, // TODO: 没有返回，这里写死
-          startTime: this.timestampToTime(live.startTime),
-          flvUrl: live.flvUrl,
-          hlsUrl: live.m3u8Url,
-          rtmpUrl: live.rtmpUrl
+          startTime: this.timestampToTime(live.start_time),
+          flvUrl: live.flv_url,
+          hlsUrl: live.m3u8_url,
+          rtmpUrl: live.rtmp_url
         });
       }
 
@@ -499,8 +500,8 @@ export default {
       .then(resp => {
         if (resp.code === 0) {
           console.log(resp);
-          if (resp.result.liveInfoList.length > 0) {
-            this.handleQueryLiveListRsp(resp.result.liveInfoList);
+          if (resp.result.live_info_list.length > 0) {
+            this.handleQueryLiveListRsp(resp.result.live_info_list);
           } else {
             showMessage && this.$Message.warning("直播列表为空");
           }
